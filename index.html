@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justice Run 5K - Register Display</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #2c1618;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .poster-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; 
+            aspect-ratio: 1000 / 625; 
+            background-image: url('background.png'); 
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #deb887;
+        }
+
+        .input-bib-container {
+            position: absolute;
+            top: 73.5%; 
+            left: 38%;
+            width: 24%;
+            height: 7.5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animasi Berkedip */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .input-bib {
+            width: 100%;
+            height: 100%;
+            background: transparent; 
+            border: none;
+            outline: none;
+            color: #ffffff; 
+            font-size: 1.6vw; 
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            animation: blink 1.2s infinite; 
+        }
+
+        .input-bib::placeholder {
+            color: #ffffff;
+            opacity: 1;
+        }
+
+        .input-bib:focus {
+            background: rgba(255, 255, 255, 0.15); 
+            border-radius: 4px;
+        }
+
+        .button-container {
+            margin-top: 25px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+            color: #ffffff;
+            border: 2px solid #ffcc00;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 204, 0, 0.3);
+            background: linear-gradient(135deg, #a30000 0%, #5c0000 100%);
+        }
+
+        .fullscreen-overlay {
+            display: none; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .fullscreen-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: fill; 
+        }
+
+        .error-message {
+            display: none;
+            color: #ff4d4d;
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            border: 2px dashed #ff4d4d;
+            padding: 20px 40px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 10001; /* Memastikan pesan error tetap terlihat di depan gambar */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="poster-container">
+        <div class="input-bib-container">
+            <input type="text" class="input-bib" id="bibNumber" placeholder="KETIK DISINI" maxlength="10">
+        </div>
+    </div>
+
+    <div class="button-container">
+        <button class="btn-register" id="btnRegister" onclick="openFullscreen()">BIB REGISTERED DISPLAY</button>
+    </div>
+
+    <div id="fullscreenOverlay" class="fullscreen-overlay">
+        <img id="localImage" src="" alt="Gambar BIB Lokal" onerror="handleImageError()">
+        <p id="errorMessage" class="error-message">BIB Number Tidak Ditemukan</p>
+    </div>
+
+    <script>
+        function openFullscreen() {
+            var bibValue = document.getElementById('bibNumber').value.trim();
+            
+            if (bibValue === "") {
+                alert("Silakan ketik nomor BIB terlebih dahulu!");
+                return;
+            }
+
+            document.getElementById('localImage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+
+            document.getElementById('localImage').src = bibValue + ".png";
+
+            document.getElementById('fullscreenOverlay').style.display = 'flex';
+            
+            var elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            }
+        }
+
+        function handleImageError() {
+            document.getElementById('localImage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreenOverlay').style.display = 'none';
+            document.getElementById('localImage').src = "";
+            
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        }
+
+        // Fitur Deteksi Tombol Keyboard
+        document.addEventListener('keydown', function(event) {
+            // 1. Fungsi Tombol Enter (Membuka Fullscreen saat fokus di input)
+            if (event.key === "Enter" || event.keyCode === 13) {
+                // Mengecek apakah overlay sedang tersembunyi agar fungsi enter bekerja saat mengetik
+                var overlay = document.getElementById('fullscreenOverlay');
+                if (overlay.style.display !== 'flex') {
+                    openFullscreen();
+                }
+            }
+
+            // 2. Fungsi Tombol Escape (Menutup Fullscreen)
+            if (event.key === "Escape" || event.keyCode === 27) {
+                var overlay = document.getElementById('fullscreenOverlay');
+                if (overlay.style.display === 'flex') {
+                    closeFullscreen();
+                }
+            }
+        });
+
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement) {
+                document.getElementById('fullscreenOverlay').style.display = 'none';
+                document.getElementById('localImage').src = "";
+            }
+        });
+    </script>
+</body>
+</html>
